@@ -1,19 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const knex = require('../knex'); /* DO NOT FORGET TO REQUIRE KNEX ! */
-
-
-/* GET users listing. */
-// router.post('/:userid/something', (req, res) => {
-//   console.log('userid', req.params.userid)
-//   res.send('Hi :) here are some users!');
-// });
+var express = require('express');
+var router = express.Router();
+const knex = require('../knex');
 
 // LIST all users
 router.get('/', (req, res, next) => {
   // USE KNEX TO GET ALL USERS
   knex('users')
-  .then( (data) => {
+  .then((data) => {
     console.log('data', data)
     res.send(data)
   })
@@ -24,43 +17,39 @@ router.get('/:userid', (req, res, next) => {
   // USE KNEX TO GET A SPECIFIC USER
   knex('users')
   .where('id', req.params.userid)
-  .then((result) => {
-    console.log('the specific user', result)
-    res.send(result)
+  .then((data) => {
+    console.log('the specific user', data)
+    res.send(data)
   })
 })
 
-// CREATE(post) ONE record for this table
+// CREATE one users
 router.post('/', (req, res, next) => {
-  // look for some provided body data
+  // Look for some provided Body data
   // req.body
   console.log('req.body', req.body)
-  // req.body.name gets me the name
 
-  // create new user in db with knex
-  // SQL insert
-  knex('users') // nominate
-  .insert({name: req.body.name}) // what operation?
+  // create new user in DB with KNEX
+  // SQL INSERT
+  knex('users')
+  .insert({name: req.body.name})
   .returning('*')
-  /* returning method specifies which column (in this case, all columns) should
-  be returned by the insert and update methods */
-  .then( (data) => {
-    let insertedRecord = data[0]
+  .then((result) => {
+    let insertedRecord = result[0]
     console.log('data', insertedRecord)
-    // conclude the route with res.send():
-    res.send(insertedRecord) // we created and now are responding back w/ it
+    // conclude the route with res.send
+    res.send(insertedRecord)
   })
 
-  // what if no name was provided in the body data? >> no validation for now
 })
 
-// UPDATE ONE record which already exists in db
+// UPDATE one user, whom already exists in DB
 router.put('/:userid', (req, res, next) => {
   console.log('THE PUT ROUTE');
   // look up a specific user in the database
   knex('users')
   .where('id', req.params.userid)
-  .then( (data) => {
+  .then((data) => {
     console.log('the specific user', data)
 
     // once found, if found, update that user record's data
@@ -83,17 +72,25 @@ router.put('/:userid', (req, res, next) => {
   })
 })
 
-// DELETE ONE record for this table
+
+// DELETE a user, a specific user
 router.delete('/:userid', (req, res, next) => {
-  // look up a specific user (id) in the database
-  // if it exists, delete it
+  // lookup a userid in the DB, if exists, delete it
   knex('users')
   .where('id', req.params.userid)
   .del()
-  .then( () => {
-    console.log('')
+  .then((result) => {
+    console.log('result', result)
+    if( result ) {
+      res.send({ 'success': result })
+    } else {
+      throw new Error('Couldnt find the user to delete')
+    }
   })
-  res.send('DELETED RECORD')
+  .catch((err) => {
+    next(err)
+  })
 })
+
 
 module.exports = router;
