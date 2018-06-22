@@ -8,16 +8,14 @@
       document.addEventListener("DOMContentLoaded", function(event) {
         console.log("DOM fully loaded and parsed")
         fetch('/users', {
-            method: "GET"
+            method: 'GET'
           })
           .then((response) => {
             return response.json()
           })
           .then((myUsers) => {
-            console.log(myUsers)
-            // represents success
-            // DOM manipulation
-            let ul = document.getElementById('userlist')
+            console.log(myUsers) // represents success
+            let ul = document.getElementById('userlist') // DOM manipulation
             for (user of myUsers) {
               let li = document.createElement('li')
               li.innerText = user.name
