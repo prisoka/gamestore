@@ -45,13 +45,14 @@ router.post('/', (req, res, next) => {
   /* returning method specifies which column (in this case, all columns) should
   be returned by the insert and update methods */
   .then((data) => {
-    console.log('data', data)
+    let insertedRecord = data[0]
+    console.log('data', insertedRecord)
+    // conclude the route with res.send():
+    res.send(insertedRecord) // we created and now are responding back w/ it
   })
 
   // what if no name was provided in the body data?
-
-  // conclude the route with res.send():
-  res.send('end of route')
+  // no validation for now
 })
 
 // UPDATE ONE record for this table
